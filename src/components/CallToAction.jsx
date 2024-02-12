@@ -26,8 +26,8 @@ export function CallToAction() {
           <p className="mt-4 text-lg tracking-tight text-white">
             its an order
           </p>
-          <Button href="/register" color="white" className="mt-10">
-            Get 6 months free
+          <Button href="/#" color="white" className="mt-10">
+            Get 6 times free
           </Button>
         </div>
       </Container>
