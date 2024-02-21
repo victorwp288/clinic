@@ -1,3 +1,4 @@
+import BookAppointment from '@/components/BookAppointment'
 import { CallToAction } from '@/components/CallToAction'
 import { Faqs } from '@/components/Faqs'
 import { Footer } from '@/components/Footer'
@@ -19,6 +20,7 @@ export default function Home() {
         <CallToAction />
         <Testimonials />
         <Pricing />
+		<BookAppointment />
         <Faqs />
       </main>
       <Footer />
