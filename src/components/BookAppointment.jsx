@@ -26,9 +26,17 @@ const formSchema = z.object({
   name: z.string(),
   number: z.string(),
   email: z.string().email(),
+  timeSlot: z.string(),
 })
 
+function onSubmit() {
+  // Do something with the form values.
+  // ✅ This will be type-safe and validated.
+  console.log(values)
+}
+
 const handleSubmit = async (data) => {
+  console.log('handleSubmit fired!')
   const supabase = createClient()
   const { data: insertedData, error } = await supabase
     .from('customers')
@@ -50,6 +58,7 @@ function BookAppointment() {
       name: '',
       number: '',
       email: '',
+      timeSlot: '',
     },
   })
 
@@ -84,12 +93,15 @@ function BookAppointment() {
   }
 
   return (
-    <Form
-      {...form}
-      onSubmit={form.handleSubmit(handleSubmit)}
-      className="container space-y-8 p-5"
-    >
-
+    <Form {...form}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          console.log('Form submitted') // This will log when the form is submitted
+          form.handleSubmit(handleSubmit)(e)
+        }}
+        className="container space-y-8 p-5"
+      >
         <h1 className="text-4xl">Book now</h1>
         <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
           {/* Calender  */}
@@ -113,85 +125,96 @@ function BookAppointment() {
             )}
           />
           {/* Time Slot  */}
-          <div className=" mt-3 md:mt-0">
-            <h2 className="mb-3 flex items-center gap-2">
-              <Clock className="h-5 w-5 text-primary" />
-              Select Time Slot
-            </h2>
-            <div
-              className="grid grid-cols-3 gap-2 rounded-lg 
-				border p-5"
-            >
-              {timeSlot?.map((item, index) => (
-                <h2
-                  key={index} // Add key prop with unique value
-                  onClick={() => setSelectedTimeSlot(item.time)}
-                  className={`cursor-pointer rounded-full border
-						p-2 text-center hover:bg-primary
-						hover:text-white
-						${item.time == selectedTimeSlot && 'bg-primary text-white'}`}
-                >
-                  {item.time}
-                </h2>
-              ))}
-            </div>
-          </div>
+          <FormField
+            control={form.control}
+            name="timeSlot"
+            render={({ field }) => (
+              <FormItem className="mt-3 md:mt-0">
+                <FormLabel className="mb-3 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-primary" />
+                  Select Time Slot
+                </FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-3 gap-2 rounded-lg border p-5">
+                    {timeSlot?.map((item, index) => (
+                      <h2
+                        key={index}
+                        onClick={() => {
+                          setSelectedTimeSlot(item.time)
+                          field.onChange(item.time)
+                        }}
+                        className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white
+                        ${
+                          item.time == selectedTimeSlot &&
+                          'bg-primary text-white'
+                        }`}
+                      >
+                        {item.time}
+                      </h2>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="note"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Note</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Note" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="mt-3" color="primary" type="submit">
+            Book Appointment
+          </Button>
         </div>
-        <FormField
-          control={form.control}
-          name="note"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Note</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Note" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input type="text" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input type="text" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className="mt-3" color="primary" type="submit">
-          Book Appointment
-        </Button>
+      </form>
     </Form>
   )
 }
