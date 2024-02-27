@@ -20,6 +20,11 @@ import { Input } from '@/components/ui/input'
 
 import { createClient } from '@/utils/supabase/client'
 
+import { ToastContainer, toast } from 'react-toastify'
+
+function toasty() {
+  toast('Appointment Booked!')
+}
 const formSchema = z.object({
   date: z.date(),
   note: z.string(),
@@ -28,12 +33,6 @@ const formSchema = z.object({
   email: z.string().email(),
   timeSlot: z.string(),
 })
-
-function onSubmit() {
-  // Do something with the form values.
-  // ✅ This will be type-safe and validated.
-  console.log(values)
-}
 
 const handleSubmit = async (data) => {
   console.log('handleSubmit fired!')
@@ -210,11 +209,17 @@ function BookAppointment() {
               </FormItem>
             )}
           />
-          <Button className="mt-3" color="primary" type="submit">
+          <Button
+            className="mt-3"
+            color="primary"
+            type="submit"
+            onClick={toasty}
+          >
             Book Appointment
           </Button>
         </div>
       </form>
+      <ToastContainer />
     </Form>
   )
 }
