@@ -1,16 +1,58 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { CalendarDays, Clock } from 'lucide-react'
-import { Textarea } from '@/components/ui/textarea'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+
+import { createClient } from '@/utils/supabase/client'
+
+const formSchema = z.object({
+  date: z.date(),
+  note: z.string(),
+  name: z.string(),
+  number: z.string(),
+  email: z.string().email(),
+})
+
+const handleSubmit = async (data) => {
+  const supabase = createClient()
+  const { data: insertedData, error } = await supabase
+    .from('customers')
+    .insert([data])
+
+  if (error) console.error('Error inserting data:', error)
+  else console.log('Data inserted:', insertedData)
+}
 
 function BookAppointment() {
-  const [date, setDate] = useState(new Date())
   const [timeSlot, setTimeSlot] = useState()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
-  const [note, setNote] = useState()
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      date: new Date(),
+      note: '',
+      name: '',
+      number: '',
+      email: '',
+    },
+  })
+
   useEffect(() => {
     getTime()
   }, [])
@@ -40,58 +82,117 @@ function BookAppointment() {
   const isPastDay = (day) => {
     return day <= new Date()
   }
+
   return (
-    <div className="container p-5">
-      <h1 className="text-4xl">Book now</h1>
-      <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
-        {/* Calender  */}
-        <div className="flex flex-col   items-baseline gap-3">
-          <h2 className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-primary" />
-            Select Date
-          </h2>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            disabled={isPastDay}
-            className="rounded-md border"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="container space-y-8 p-5"
+      >
+        <h1 className="text-4xl">Book now</h1>
+        <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
+          {/* Calender  */}
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select Date</FormLabel>
+                <FormControl>
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={isPastDay}
+                    className="rounded-md border"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        {/* Time Slot  */}
-        <div className=" mt-3 md:mt-0">
-          <h2 className="mb-3 flex items-center gap-2">
-            <Clock className="h-5 w-5 text-primary" />
-            Select Time Slot
-          </h2>
-          <div
-            className="grid grid-cols-3 gap-2 rounded-lg 
+          {/* Time Slot  */}
+          <div className=" mt-3 md:mt-0">
+            <h2 className="mb-3 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-primary" />
+              Select Time Slot
+            </h2>
+            <div
+              className="grid grid-cols-3 gap-2 rounded-lg 
 				border p-5"
-          >
-            {timeSlot?.map((item, index) => (
-              <h2
-                key={index} // Add key prop with unique value
-                onClick={() => setSelectedTimeSlot(item.time)}
-                className={`cursor-pointer rounded-full border
+            >
+              {timeSlot?.map((item, index) => (
+                <h2
+                  key={index} // Add key prop with unique value
+                  onClick={() => setSelectedTimeSlot(item.time)}
+                  className={`cursor-pointer rounded-full border
 						p-2 text-center hover:bg-primary
 						hover:text-white
 						${item.time == selectedTimeSlot && 'bg-primary text-white'}`}
-              >
-                {item.time}
-              </h2>
-            ))}
+                >
+                  {item.time}
+                </h2>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <Textarea
-        className="mt-3"
-        placeholder="Note"
-        onChange={(e) => setNote(e.target.value)}
-      />
-      <Button className="mt-3" color="primary">
-        Book Appointment
-      </Button>
-    </div>
+        <FormField
+          control={form.control}
+          name="note"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Note</FormLabel>
+              <FormControl>
+                <Input type="text" placeholder="Note" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="mt-3" color="primary" type="submit">
+          Book Appointment
+        </Button>
+      </form>
+    </Form>
   )
 }
 
