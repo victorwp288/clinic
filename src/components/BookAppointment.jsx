@@ -84,11 +84,12 @@ function BookAppointment() {
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="container space-y-8 p-5"
-      >
+    <Form
+      {...form}
+      onSubmit={form.handleSubmit(handleSubmit)}
+      className="container space-y-8 p-5"
+    >
+
         <h1 className="text-4xl">Book now</h1>
         <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
           {/* Calender  */}
@@ -191,7 +192,6 @@ function BookAppointment() {
         <Button className="mt-3" color="primary" type="submit">
           Book Appointment
         </Button>
-      </form>
     </Form>
   )
 }
