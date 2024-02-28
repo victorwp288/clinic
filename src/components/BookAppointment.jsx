@@ -32,6 +32,7 @@ const formSchema = z.object({
   number: z.string(),
   email: z.string().email(),
   timeSlot: z.string(),
+  selectedDate: z.date(),
 })
 
 const handleSubmit = async (data) => {
@@ -44,10 +45,48 @@ const handleSubmit = async (data) => {
   if (error) console.error('Error inserting data:', error)
   else console.log('Data inserted:', insertedData)
 }
-
 function BookAppointment() {
   const [timeSlot, setTimeSlot] = useState()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
+  const [selectedDate, setSelectedDate] = useState(new Date())
+
+
+  
+  async function getTimeFromDB(date) {
+    if (!date) {
+      return
+    }
+	// format date as DD-MM-YYYY
+
+    const formattedDate = date.toISOString().split('T')[0]
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('customers')
+      .select('timeSlot')
+      .eq('selectedDate', formattedDate)
+
+    console.log('Date:', date)
+
+    if (error) {
+      console.error('Error fetching data:', error)
+      return
+    }
+
+    // Assuming time slots are in 24-hour format like '13:00', '14:00', etc.
+    const allTimeSlots = Array.from(
+      { length: 11 }, // 11 slots from 08:00 to 18:00
+      (_, i) => (i + 8 < 10 ? '0' : '') + (i + 8) + ':00',
+    )
+
+    // Filter out occupied time slots
+    const occupiedTimeSlots = data.map((item) => item.timeSlot)
+    const availableTimeSlots = allTimeSlots.filter(
+      (slot) => !occupiedTimeSlots.includes(slot),
+    )
+    console.log('Available time slots:', availableTimeSlots)
+
+    setTimeSlot(availableTimeSlots)
+  }
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,37 +97,18 @@ function BookAppointment() {
       number: '',
       email: '',
       timeSlot: '',
+      selectedDate: new Date(),
     },
   })
 
   useEffect(() => {
-    getTime()
-  }, [])
-
-  const getTime = () => {
-    const timeList = []
-    for (let i = 10; i <= 12; i++) {
-      timeList.push({
-        time: i + ':00 AM',
-      })
-      timeList.push({
-        time: i + ':30 AM',
-      })
-    }
-    for (let i = 1; i <= 6; i++) {
-      timeList.push({
-        time: i + ':00 PM',
-      })
-      timeList.push({
-        time: i + ':30 PM',
-      })
-    }
-
-    setTimeSlot(timeList)
-  }
+    getTimeFromDB(selectedDate)
+  }, [selectedDate])
 
   const isPastDay = (day) => {
-    return day <= new Date()
+    const dayOfWeek = day.getDay()
+    // Disable past days and weekends
+    return day <= new Date() || dayOfWeek === 0 || dayOfWeek === 6
   }
 
   return (
@@ -114,7 +134,11 @@ function BookAppointment() {
                   <Calendar
                     mode="single"
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onSelect={(date) => {
+                      field.onChange(date)
+                      setSelectedDate(date)
+                      form.setValue('selectedDate', date)
+                    }}
                     disabled={isPastDay}
                     className="rounded-md border"
                   />
@@ -135,20 +159,17 @@ function BookAppointment() {
                 </FormLabel>
                 <FormControl>
                   <div className="grid grid-cols-3 gap-2 rounded-lg border p-5">
-                    {timeSlot?.map((item, index) => (
+                    {timeSlot?.map((time, index) => (
                       <h2
                         key={index}
                         onClick={() => {
-                          setSelectedTimeSlot(item.time)
-                          field.onChange(item.time)
+                          setSelectedTimeSlot(time)
+                          field.onChange(time)
                         }}
                         className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white
-                        ${
-                          item.time == selectedTimeSlot &&
-                          'bg-primary text-white'
-                        }`}
+    ${time == selectedTimeSlot && 'bg-primary text-white'}`}
                       >
-                        {item.time}
+                        {time}
                       </h2>
                     ))}
                   </div>
