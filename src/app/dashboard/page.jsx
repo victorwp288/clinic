@@ -35,4 +35,4 @@ function Dashboard() {
   </div>
 }
 
-export default BookAppointment
+export default Dashboard

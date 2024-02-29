@@ -45,18 +45,16 @@ const handleSubmit = async (data) => {
   if (error) console.error('Error inserting data:', error)
   else console.log('Data inserted:', insertedData)
 }
-function BookAppointment() {
+export function BookAppointment() {
   const [timeSlot, setTimeSlot] = useState()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-
-  
   async function getTimeFromDB(date) {
     if (!date) {
       return
     }
-	// format date as DD-MM-YYYY
+    // format date as DD-MM-YYYY
 
     const formattedDate = date.toISOString().split('T')[0]
     const supabase = createClient()
@@ -244,5 +242,3 @@ function BookAppointment() {
     </Form>
   )
 }
-
-export default BookAppointment
