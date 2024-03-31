@@ -23,6 +23,7 @@ export default function Login() {
         // Signed in successfully, you can use userCredential if needed
         // For example, redirect the user or display a success message
         console.log('Signed in successfully:', userCredential.user)
+        router.push('/dashboard')
       })
       .catch((error) => {
         // Handle Errors here.
@@ -35,8 +36,6 @@ export default function Login() {
     setEmail('')
     setPassword('')
 
-    //redirect to the dashboard
-    router.push('/dashboard')
   }
 
   return (
