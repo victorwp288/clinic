@@ -1,9 +1,9 @@
+// Import necessary libraries and Firebase modules
 'use client'
 import React, { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { CalendarDays, Clock } from 'lucide-react'
@@ -17,14 +17,21 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-
-import { createClient } from '@/utils/supabase/client'
-
+import { initializeApp } from 'firebase/app'
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore'
 import { ToastContainer, toast } from 'react-toastify'
-
+import { db } from '@/utils/firebase'
 function toasty() {
   toast('Appointment Booked!')
 }
+
 const formSchema = z.object({
   date: z.date(),
   note: z.string(),
@@ -36,54 +43,56 @@ const formSchema = z.object({
 })
 
 const handleSubmit = async (data) => {
-  console.log('handleSubmit fired!')
-  const supabase = createClient()
-  const { data: insertedData, error } = await supabase
-    .from('customers')
-    .insert([data])
-
-  if (error) console.error('Error inserting data:', error)
-  else console.log('Data inserted:', insertedData)
+  try {
+    const docRef = await addDoc(collection(db, 'customers'), {
+      ...data,
+      selectedDate: data.selectedDate.toISOString().split('T')[0], // Convert date to YYYY-MM-DD format
+    })
+    console.log('Appointment booked with ID:', docRef.id)
+    toasty() // Show toast on successful booking
+  } catch (error) {
+    console.error('Error booking appointment:', error)
+  }
 }
+
 export function BookAppointment() {
-  const [timeSlot, setTimeSlot] = useState()
+  const [timeSlot, setTimeSlot] = useState([])
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
   const [selectedDate, setSelectedDate] = useState(new Date())
 
+  // Refactored getTimeFromDB function for Firebase
   async function getTimeFromDB(date) {
     if (!date) {
       return
     }
-    // format date as DD-MM-YYYY
-
     const formattedDate = date.toISOString().split('T')[0]
-    const supabase = createClient()
-    const { data, error } = await supabase
-      .from('customers')
-      .select('timeSlot')
-      .eq('selectedDate', formattedDate)
+    const q = query(
+      collection(db, 'customers'),
+      where('selectedDate', '==', formattedDate),
+    )
+    const querySnapshot = await getDocs(q)
+    const data = querySnapshot.docs.map((doc) => doc.data())
 
     console.log('Date:', date)
+    console.log('Fetched Data:', data)
 
-    if (error) {
-      console.error('Error fetching data:', error)
-      return
-    }
-
-    // Assuming time slots are in 24-hour format like '13:00', '14:00', etc.
     const allTimeSlots = Array.from(
-      { length: 11 }, // 11 slots from 08:00 to 18:00
-      (_, i) => (i + 8 < 10 ? '0' : '') + (i + 8) + ':00',
+      { length: 11 },
+      (_, i) => `${i + 8 < 10 ? '0' : ''}${i + 8}:00`,
     )
-
-    // Filter out occupied time slots
     const occupiedTimeSlots = data.map((item) => item.timeSlot)
     const availableTimeSlots = allTimeSlots.filter(
       (slot) => !occupiedTimeSlots.includes(slot),
     )
-    console.log('Available time slots:', availableTimeSlots)
 
+    console.log('Available time slots:', availableTimeSlots)
     setTimeSlot(availableTimeSlots)
+
+    if (availableTimeSlots.length > 0) {
+      const firstAvailableTimeSlot = availableTimeSlots[0]
+      setSelectedTimeSlot(firstAvailableTimeSlot) // Update selected time slot state
+      form.setValue('timeSlot', firstAvailableTimeSlot) // Update form field
+    }
   }
 
   const form = useForm({
@@ -101,13 +110,10 @@ export function BookAppointment() {
 
   useEffect(() => {
     getTimeFromDB(selectedDate)
-  }, [selectedDate])
+  }, [selectedDate]) // Include timeSlot as a dependency to re-select if available slots change
 
-  const isPastDay = (day) => {
-    const dayOfWeek = day.getDay()
-    // Disable past days and weekends
-    return day <= new Date() || dayOfWeek === 0 || dayOfWeek === 6
-  }
+  const isPastDay = (day) =>
+    day <= new Date() || day.getDay() === 0 || day.getDay() === 6
 
   return (
     <Form {...form}>
