@@ -40,6 +40,7 @@ const formSchema = z.object({
   email: z.string().email(),
   timeSlot: z.string(),
   selectedDate: z.date(),
+  appointmentType: z.string(),
 })
 
 const handleSubmit = async (data) => {
@@ -47,6 +48,7 @@ const handleSubmit = async (data) => {
     const docRef = await addDoc(collection(db, 'customers'), {
       ...data,
       selectedDate: data.selectedDate.toISOString().split('T')[0], // Convert date to YYYY-MM-DD format
+      appointmentType: data.appointmentType, // Add this line
     })
     console.log('Appointment booked with ID:', docRef.id)
     toasty() // Show toast on successful booking
@@ -56,10 +58,16 @@ const handleSubmit = async (data) => {
 }
 
 export function BookAppointment() {
+  const appointmentTypes = [
+    { type: 'Hair treatment', duration: 30 },
+    { type: 'Nail treatment', duration: 60 },
+    { type: 'Hair cut', duration: 90 },
+    // Add more types as needed
+  ]
   const [timeSlot, setTimeSlot] = useState([])
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
   const [selectedDate, setSelectedDate] = useState(new Date())
-
+  const [appointmentType, setAppointmentType] = useState(appointmentTypes[0])
   // Refactored getTimeFromDB function for Firebase
   async function getTimeFromDB(date) {
     if (!date) {
@@ -77,8 +85,15 @@ export function BookAppointment() {
     console.log('Fetched Data:', data)
 
     const allTimeSlots = Array.from(
-      { length: 11 },
-      (_, i) => `${i + 8 < 10 ? '0' : ''}${i + 8}:00`,
+      { length: Math.floor(((17 - 8) * 60) / appointmentType.duration) },
+      (_, i) => {
+        const time = 8 * 60 + i * appointmentType.duration
+        const hours = Math.floor(time / 60)
+        const minutes = time % 60
+        return `${hours < 10 ? '0' : ''}${hours}:${
+          minutes < 10 ? '0' : ''
+        }${minutes}`
+      },
     )
     const occupiedTimeSlots = data.map((item) => item.timeSlot)
     const availableTimeSlots = allTimeSlots.filter(
@@ -87,6 +102,7 @@ export function BookAppointment() {
 
     console.log('Available time slots:', availableTimeSlots)
     setTimeSlot(availableTimeSlots)
+
 
     if (availableTimeSlots.length > 0) {
       const firstAvailableTimeSlot = availableTimeSlots[0]
@@ -105,12 +121,13 @@ export function BookAppointment() {
       email: '',
       timeSlot: '',
       selectedDate: new Date(),
+      appointmentType: 'type1',
     },
   })
 
   useEffect(() => {
     getTimeFromDB(selectedDate)
-  }, [selectedDate]) // Include timeSlot as a dependency to re-select if available slots change
+  }, [selectedDate, appointmentType]) // Include timeSlot as a dependency to re-select if available slots change
 
   const isPastDay = (day) =>
     day <= new Date() || day.getDay() === 0 || day.getDay() === 6
@@ -151,6 +168,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+
           {/* Time Slot  */}
           <FormField
             control={form.control}
@@ -177,6 +195,38 @@ export function BookAppointment() {
                       </h2>
                     ))}
                   </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="appointmentType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Appointment Type</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    onChange={(e) => {
+                      const selectedType = appointmentTypes.find(
+                        (type) => type.type === e.target.value,
+                      )
+                      setAppointmentType(selectedType)
+                      field.onChange(e)
+                    }}
+                  >
+                    {appointmentTypes.map((appointmentType) => (
+                      <option
+                        key={appointmentType.type}
+                        value={appointmentType.type}
+                      >
+                        {appointmentType.type} - {appointmentType.duration}{' '}
+                        minutes
+                      </option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

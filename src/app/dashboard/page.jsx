@@ -50,15 +50,15 @@ export function Dashboard() {
 
   const router = useRouter()
   const auth = getAuth()
- const handleSignOut = async () => {
+  const handleSignOut = async () => {
     try {
-      await signOut(auth);
-      console.log("User signed out successfully");
-      router.push('/'); // Redirect user to login page after sign out
+      await signOut(auth)
+      console.log('User signed out successfully')
+      router.push('/') // Redirect user to login page after sign out
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error('Error signing out:', error)
     }
-  };
+  }
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -73,6 +73,7 @@ export function Dashboard() {
   if (loading) {
     return <div>Loading...</div> // Or a more styled loading spinner/component
   }
+
   return (
     <TooltipProvider>
       <div className="grid h-screen w-full pl-[56px]">
@@ -318,7 +319,7 @@ export function Dashboard() {
               variant="outline"
               size="sm"
               className="ml-auto gap-1.5 text-sm"
-			  onClick={handleSignOut}
+              onClick={handleSignOut}
             >
               sign out
             </Button>
@@ -327,9 +328,6 @@ export function Dashboard() {
               Share
             </Button>
           </header>
-          {
-            //<!-- Calender goes in main below this -->
-          }
           <main className="grid flex-1 gap-4 overflow-auto p-4 md:grid-cols-2 lg:grid-cols-3">
             {calendars.map((calendar) => (
               <div key={calendar.id}>
@@ -337,6 +335,18 @@ export function Dashboard() {
                 <p>{calendar.description}</p>
               </div>
             ))}
+            <div>
+              <main className="flex-1 overflow-auto">
+                <iframe
+                  src="https://calendar.google.com/calendar/embed?src=your_calendar_id%40group.calendar.google.com&ctz=America%2FNew_York"
+                  style={{ border: 0 }}
+                  width="100%"
+                  height="600"
+                  frameborder="0"
+                  scrolling="no"
+                ></iframe>
+              </main>
+            </div>
           </main>
         </div>
       </div>
