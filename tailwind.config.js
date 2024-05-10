@@ -17,7 +17,17 @@ module.exports = {
       },
     },
     extend: {
+      transitionProperty: {
+        'max-height': 'max-height',
+      },
+
+      fontFamily: {
+        poppins: 'var(--poppins)',
+        serif: 'var(--serif)',
+      },
+
       colors: {
+        'main-pink': '#bda5a8',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

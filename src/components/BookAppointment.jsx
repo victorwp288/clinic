@@ -103,7 +103,6 @@ export function BookAppointment() {
     console.log('Available time slots:', availableTimeSlots)
     setTimeSlot(availableTimeSlots)
 
-
     if (availableTimeSlots.length > 0) {
       const firstAvailableTimeSlot = availableTimeSlots[0]
       setSelectedTimeSlot(firstAvailableTimeSlot) // Update selected time slot state
@@ -140,10 +139,10 @@ export function BookAppointment() {
           console.log('Form submitted') // This will log when the form is submitted
           form.handleSubmit(handleSubmit)(e)
         }}
-        className="container space-y-8 p-5"
+        className="container m-auto mt-12 w-[70vw] space-y-8 p-5"
       >
         <h1 className="text-4xl">Book now</h1>
-        <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
+        <div className=" grid  grid-cols-1 gap-8 md:grid-cols-2">
           {/* Calender  */}
           <FormField
             control={form.control}
@@ -161,7 +160,7 @@ export function BookAppointment() {
                       form.setValue('selectedDate', date)
                     }}
                     disabled={isPastDay}
-                    className="rounded-md border"
+                    className=" w-[100%] rounded-md border"
                   />
                 </FormControl>
                 <FormMessage />
