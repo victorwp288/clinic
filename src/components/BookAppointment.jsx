@@ -1,6 +1,5 @@
-// Import necessary libraries and Firebase modules
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -17,7 +16,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { initializeApp } from 'firebase/app'
 import {
   getFirestore,
   collection,
@@ -28,9 +26,8 @@ import {
 } from 'firebase/firestore'
 import { ToastContainer, toast } from 'react-toastify'
 import { db } from '@/utils/firebase'
-function toasty() {
-  toast('Appointment Booked!')
-}
+
+const toasty = () => toast('Appointment Booked!')
 
 const formSchema = z.object({
   date: z.date(),
@@ -43,72 +40,18 @@ const formSchema = z.object({
   appointmentType: z.string(),
 })
 
-const handleSubmit = async (data) => {
-  try {
-    const docRef = await addDoc(collection(db, 'customers'), {
-      ...data,
-      selectedDate: data.selectedDate.toISOString().split('T')[0], // Convert date to YYYY-MM-DD format
-      appointmentType: data.appointmentType, // Add this line
-    })
-    console.log('Appointment booked with ID:', docRef.id)
-    toasty() // Show toast on successful booking
-  } catch (error) {
-    console.error('Error booking appointment:', error)
-  }
-}
+const appointmentTypes = [
+  { type: 'Hair treatment', duration: 30 },
+  { type: 'Nail treatment', duration: 60 },
+  { type: 'Hair cut', duration: 90 },
+  // Add more types as needed
+]
 
-export function BookAppointment() {
-  const appointmentTypes = [
-    { type: 'Hair treatment', duration: 30 },
-    { type: 'Nail treatment', duration: 60 },
-    { type: 'Hair cut', duration: 90 },
-    // Add more types as needed
-  ]
+const BookAppointment = () => {
   const [timeSlot, setTimeSlot] = useState([])
   const [selectedTimeSlot, setSelectedTimeSlot] = useState()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [appointmentType, setAppointmentType] = useState(appointmentTypes[0])
-  // Refactored getTimeFromDB function for Firebase
-  async function getTimeFromDB(date) {
-    if (!date) {
-      return
-    }
-    const formattedDate = date.toISOString().split('T')[0]
-    const q = query(
-      collection(db, 'customers'),
-      where('selectedDate', '==', formattedDate),
-    )
-    const querySnapshot = await getDocs(q)
-    const data = querySnapshot.docs.map((doc) => doc.data())
-
-    console.log('Date:', date)
-    console.log('Fetched Data:', data)
-
-    const allTimeSlots = Array.from(
-      { length: Math.floor(((17 - 8) * 60) / appointmentType.duration) },
-      (_, i) => {
-        const time = 8 * 60 + i * appointmentType.duration
-        const hours = Math.floor(time / 60)
-        const minutes = time % 60
-        return `${hours < 10 ? '0' : ''}${hours}:${
-          minutes < 10 ? '0' : ''
-        }${minutes}`
-      },
-    )
-    const occupiedTimeSlots = data.map((item) => item.timeSlot)
-    const availableTimeSlots = allTimeSlots.filter(
-      (slot) => !occupiedTimeSlots.includes(slot),
-    )
-
-    console.log('Available time slots:', availableTimeSlots)
-    setTimeSlot(availableTimeSlots)
-
-    if (availableTimeSlots.length > 0) {
-      const firstAvailableTimeSlot = availableTimeSlots[0]
-      setSelectedTimeSlot(firstAvailableTimeSlot) // Update selected time slot state
-      form.setValue('timeSlot', firstAvailableTimeSlot) // Update form field
-    }
-  }
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -124,9 +67,61 @@ export function BookAppointment() {
     },
   })
 
+  const fetchTimeSlots = useCallback(
+    async (date) => {
+      if (!date) return
+
+      const formattedDate = date.toISOString().split('T')[0]
+      const q = query(
+        collection(db, 'customers'),
+        where('selectedDate', '==', formattedDate),
+      )
+      const querySnapshot = await getDocs(q)
+      const data = querySnapshot.docs.map((doc) => doc.data())
+
+      const allTimeSlots = Array.from(
+        { length: Math.floor(((17 - 8) * 60) / appointmentType.duration) },
+        (_, i) => {
+          const time = 8 * 60 + i * appointmentType.duration
+          const hours = Math.floor(time / 60)
+          const minutes = time % 60
+          return `${hours < 10 ? '0' : ''}${hours}:${
+            minutes < 10 ? '0' : ''
+          }${minutes}`
+        },
+      )
+      const occupiedTimeSlots = data.map((item) => item.timeSlot)
+      const availableTimeSlots = allTimeSlots.filter(
+        (slot) => !occupiedTimeSlots.includes(slot),
+      )
+
+      setTimeSlot(availableTimeSlots)
+      if (availableTimeSlots.length > 0) {
+        const firstAvailableTimeSlot = availableTimeSlots[0]
+        setSelectedTimeSlot(firstAvailableTimeSlot)
+        form.setValue('timeSlot', firstAvailableTimeSlot)
+      }
+    },
+    [appointmentType.duration, form],
+  )
+
   useEffect(() => {
-    getTimeFromDB(selectedDate)
-  }, [selectedDate, appointmentType]) // Include timeSlot as a dependency to re-select if available slots change
+    fetchTimeSlots(selectedDate)
+  }, [selectedDate, appointmentType, fetchTimeSlots])
+
+  const handleSubmit = async (data) => {
+    try {
+      const docRef = await addDoc(collection(db, 'customers'), {
+        ...data,
+        selectedDate: data.selectedDate.toISOString().split('T')[0],
+        appointmentType: data.appointmentType,
+      })
+      console.log('Appointment booked with ID:', docRef.id)
+      toasty()
+    } catch (error) {
+      console.error('Error booking appointment:', error)
+    }
+  }
 
   const isPastDay = (day) =>
     day <= new Date() || day.getDay() === 0 || day.getDay() === 6
@@ -134,16 +129,12 @@ export function BookAppointment() {
   return (
     <Form {...form}>
       <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          console.log('Form submitted') // This will log when the form is submitted
-          form.handleSubmit(handleSubmit)(e)
-        }}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="container m-auto mt-12 w-[70vw] space-y-8 p-5"
       >
         <h1 className="text-4xl">Book now</h1>
-        <div className=" grid  grid-cols-1 gap-8 md:grid-cols-2">
-          {/* Calender  */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {/* Calendar */}
           <FormField
             control={form.control}
             name="date"
@@ -160,15 +151,14 @@ export function BookAppointment() {
                       form.setValue('selectedDate', date)
                     }}
                     disabled={isPastDay}
-                    className=" w-[100%] rounded-md border"
+                    className="w-full rounded-md border"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          {/* Time Slot  */}
+          {/* Time Slot */}
           <FormField
             control={form.control}
             name="timeSlot"
@@ -180,15 +170,16 @@ export function BookAppointment() {
                 </FormLabel>
                 <FormControl>
                   <div className="grid grid-cols-3 gap-2 rounded-lg border p-5">
-                    {timeSlot?.map((time, index) => (
+                    {timeSlot.map((time, index) => (
                       <h2
                         key={index}
                         onClick={() => {
                           setSelectedTimeSlot(time)
                           field.onChange(time)
                         }}
-                        className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white
-    ${time == selectedTimeSlot && 'bg-primary text-white'}`}
+                        className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white ${
+                          time === selectedTimeSlot && 'bg-primary text-white'
+                        }`}
                       >
                         {time}
                       </h2>
@@ -199,6 +190,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+          {/* Appointment Type */}
           <FormField
             control={form.control}
             name="appointmentType"
@@ -231,6 +223,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+          {/* Note */}
           <FormField
             control={form.control}
             name="note"
@@ -244,6 +237,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+          {/* Name */}
           <FormField
             control={form.control}
             name="name"
@@ -257,6 +251,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+          {/* Phone Number */}
           <FormField
             control={form.control}
             name="number"
@@ -270,6 +265,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
+          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -283,12 +279,7 @@ export function BookAppointment() {
               </FormItem>
             )}
           />
-          <Button
-            className="mt-3"
-            color="primary"
-            type="submit"
-            onClick={toasty}
-          >
+          <Button className="mt-3" color="primary" type="submit">
             Book Appointment
           </Button>
         </div>
@@ -297,3 +288,5 @@ export function BookAppointment() {
     </Form>
   )
 }
+
+export default BookAppointment

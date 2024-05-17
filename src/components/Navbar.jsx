@@ -10,8 +10,15 @@ function Navbar() {
   const router = useRouter()
   const [prevScrollPos, setPrevScrollPos] = useState(0)
   const [visible, setVisible] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
     const handleScroll = () => {
       const currentScrollPos = window.scrollY
       const isVisible =
@@ -22,12 +29,13 @@ function Navbar() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [prevScrollPos])
+  }, [isMounted, prevScrollPos])
 
-  // Function to determine if a link is active
   const isActive = (route) => {
     return route === router.pathname
   }
+
+  if (!isMounted) return null
 
   return (
     <div
@@ -35,7 +43,7 @@ function Navbar() {
         visible ? '' : 'hidden'
       }`}
     >
-      <img className="h-20 w-20 object-contain" src={logo}></img>
+      <Image className="h-20 w-20 object-contain" src={logo} alt="Logo" />
       <ul className="flex gap-10">
         <li>
           <ActiveLink

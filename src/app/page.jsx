@@ -1,4 +1,4 @@
-import { BookAppointment } from '@/components/BookAppointment'
+import BookAppointment from '@/components/BookAppointment'
 import ServicesContainer from '@/components/ServicesContainer'
 import HeroSection from '@/components/HeroSection'
 
