@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 352 24% 77%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -72,6 +72,43 @@
 @layer base {
   body {
     @apply bg-background text-foreground;
+  }
+
+  .active-link {
+  }
+
+  .active-link {
+    color: #d2b5b8;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: #d2b5b8;
+    text-underline-offset: 5.5px;
+    text-decoration-thickness: 1.5px;
+    letter-spacing: -0.2px;
+  }
+
+  .link {
+    position: relative;
+  }
+
+  .link::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+    z-index: -1;
+  }
+
+  .link:hover::before {
+    background-color: #000; /* Color of the hover effect */
+  }
+
+  .active-link:hover(.link:hover::before) {
+    background-color: transparent; /* Color of the hover effect */
   }
 }
 .max-h-0 {

@@ -1,81 +1,85 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import ActiveLink from '@/components/ActiveLink'
 import logo from '@/images/logo.svg'
+import { Link as ScrollLink } from 'react-scroll'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import BurgerMenu from '@/components/BurgerMenu' // Adjust the import path as necessary
 
 function Navbar() {
   const router = useRouter()
-  const [prevScrollPos, setPrevScrollPos] = useState(0)
-  const [visible, setVisible] = useState(true)
-  const [isMounted, setIsMounted] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isMounted) return
-
-    const handleScroll = () => {
-      const currentScrollPos = window.scrollY
-      const isVisible =
-        prevScrollPos > currentScrollPos || currentScrollPos < 10
-      setPrevScrollPos(currentScrollPos)
-      setVisible(isVisible)
+  const handleLinkClick = (target) => {
+    if (target.startsWith('#')) {
+      document.querySelector(target).scrollIntoView({ behavior: 'smooth' })
+    } else {
+      router.push(target)
     }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isMounted, prevScrollPos])
-
-  const isActive = (route) => {
-    return route === router.pathname
   }
 
-  if (!isMounted) return null
+  const menuItems = [
+    { id: 1, link: '/#services', label: 'I NOSTRI SERVIZI' },
+    { id: 2, link: '/gallery', label: 'GALLERY' },
+    { id: 3, link: '/chisiamo', label: 'CONTATTI' },
+    { id: 4, link: '/#booking-section', label: 'PRENOTA' },
+  ]
 
   return (
-    <div
-      className={`z-100 fixed top-0 flex w-full items-center justify-between bg-white px-24 transition duration-300 ease-in-out ${
-        visible ? '' : 'hidden'
-      }`}
-    >
-      <Image className="h-20 w-20 object-contain" src={logo} alt="Logo" />
-      <ul className="flex gap-10">
+    <div className="fixed top-0 z-50 flex w-full items-center justify-between bg-white px-4 py-4 text-sm transition duration-300 ease-in-out md:px-64">
+      <Image src={logo} className="w-16  lg:w-20" alt="Logo" />
+      <ul className="hidden gap-10 md:flex">
         <li>
-          <ActiveLink
-            href="/gallery"
-            className={
-              isActive('/gallery') ? 'font-bold text-black' : 'text-gray-700'
-            }
+          <ScrollLink
+            to="services"
+            spy={true}
+            smooth={true}
+            offset={-120}
+            duration={300}
+            className="link cursor-pointer"
+            activeClass="active-link"
+          >
+            I NOSTRI SERVIZI
+          </ScrollLink>
+        </li>
+        <li>
+          <a
+            onClick={() => handleLinkClick('/gallery')}
+            className="link cursor-pointer"
           >
             GALLERY
-          </ActiveLink>
+          </a>
         </li>
         <li>
-          <ActiveLink
-            href="#contacts"
-            className={
-              isActive('/contatti') ? 'font-bold text-black' : 'text-gray-700'
-            }
+          <a
+            onClick={() => handleLinkClick('/chisiamo')}
+            className="link cursor-pointer"
           >
             CONTATTI
-          </ActiveLink>
+          </a>
         </li>
         <li>
-          <ActiveLink
-            href="/"
-            className={`rounded-md border border-black px-4 py-2 font-bold text-black hover:bg-gray-200 ${
-              isActive('/') ? 'bg-gray-200' : ''
-            }`}
+          <ScrollLink
+            to="booking-section"
+            spy={true}
+            smooth={true}
+            offset={-80}
+            duration={300}
+            className="link cursor-pointer font-semibold"
+            activeClass="active-link"
           >
-            PRENOTA UN APPUNTAMENTO
-          </ActiveLink>
+            PRENOTA
+          </ScrollLink>
         </li>
       </ul>
+      <div className="md:hidden">
+        <BurgerMenu
+          isOpen={isMenuOpen}
+          setIsOpen={setIsMenuOpen}
+          menuItems={menuItems}
+        />
+      </div>
     </div>
   )
 }

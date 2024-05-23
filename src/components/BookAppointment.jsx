@@ -127,165 +127,172 @@ const BookAppointment = () => {
     day <= new Date() || day.getDay() === 0 || day.getDay() === 6
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="container m-auto mt-12 w-[70vw] space-y-8 p-5"
-      >
-        <h1 className="text-4xl">Book now</h1>
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {/* Calendar */}
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Select Date</FormLabel>
-                <FormControl>
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={(date) => {
-                      field.onChange(date)
-                      setSelectedDate(date)
-                      form.setValue('selectedDate', date)
-                    }}
-                    disabled={isPastDay}
-                    className="w-full rounded-md border"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Time Slot */}
-          <FormField
-            control={form.control}
-            name="timeSlot"
-            render={({ field }) => (
-              <FormItem className="mt-3 md:mt-0">
-                <FormLabel className="mb-3 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  Select Time Slot
-                </FormLabel>
-                <FormControl>
-                  <div className="grid grid-cols-3 gap-2 rounded-lg border p-5">
-                    {timeSlot.map((time, index) => (
-                      <h2
-                        key={index}
-                        onClick={() => {
-                          setSelectedTimeSlot(time)
-                          field.onChange(time)
-                        }}
-                        className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white ${
-                          time === selectedTimeSlot && 'bg-primary text-white'
-                        }`}
-                      >
-                        {time}
-                      </h2>
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Appointment Type */}
-          <FormField
-            control={form.control}
-            name="appointmentType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Appointment Type</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    onChange={(e) => {
-                      const selectedType = appointmentTypes.find(
-                        (type) => type.type === e.target.value,
-                      )
-                      setAppointmentType(selectedType)
-                      field.onChange(e)
-                    }}
-                  >
-                    {appointmentTypes.map((appointmentType) => (
-                      <option
-                        key={appointmentType.type}
-                        value={appointmentType.type}
-                      >
-                        {appointmentType.type} - {appointmentType.duration}{' '}
-                        minutes
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Note */}
-          <FormField
-            control={form.control}
-            name="note"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Note</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Note" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Phone Number */}
-          <FormField
-            control={form.control}
-            name="number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="mt-3" color="primary" type="submit">
-            Book Appointment
-          </Button>
-        </div>
-      </form>
-      <ToastContainer />
-    </Form>
+    <div className=" m-auto mt-12 w-[95vw] space-y-8 p-5 sm:p-1 md:w-[70vw]">
+      <div className="flex flex-col gap-4 py-4">
+        <h4 className="text-xs font-extrabold text-[#dec3c5] ">
+          CONCEDITI UN MOMENTO DI RELAX
+        </h4>
+        <h2 className="font-serif text-3xl font-bold tracking-tight">
+          Prenota un appuntamento
+        </h2>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {/* Calendar */}
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select Date</FormLabel>
+                  <FormControl>
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={(date) => {
+                        field.onChange(date)
+                        setSelectedDate(date)
+                        form.setValue('selectedDate', date)
+                      }}
+                      disabled={isPastDay}
+                      className="w-full rounded-md border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Time Slot */}
+            <FormField
+              control={form.control}
+              name="timeSlot"
+              render={({ field }) => (
+                <FormItem className="mt-3 md:mt-0">
+                  <FormLabel className="mb-3 flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    Select Time Slot
+                  </FormLabel>
+                  <FormControl>
+                    <div className="grid grid-cols-3 gap-2 rounded-lg border p-5">
+                      {timeSlot.map((time, index) => (
+                        <h2
+                          key={index}
+                          onClick={() => {
+                            setSelectedTimeSlot(time)
+                            field.onChange(time)
+                          }}
+                          className={`cursor-pointer rounded-full border p-2 text-center hover:bg-primary hover:text-white ${
+                            time === selectedTimeSlot && 'bg-primary text-white'
+                          }`}
+                        >
+                          {time}
+                        </h2>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Appointment Type */}
+            <FormField
+              control={form.control}
+              name="appointmentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Appointment Type</FormLabel>
+                  <FormControl>
+                    <select
+                      className=" rounded-lg border border-[#e5e7eb] px-3 py-2 text-sm"
+                      {...field}
+                      onChange={(e) => {
+                        const selectedType = appointmentTypes.find(
+                          (type) => type.type === e.target.value,
+                        )
+                        setAppointmentType(selectedType)
+                        field.onChange(e)
+                      }}
+                    >
+                      {appointmentTypes.map((appointmentType) => (
+                        <option
+                          key={appointmentType.type}
+                          value={appointmentType.type}
+                        >
+                          {appointmentType.type} - {appointmentType.duration}{' '}
+                          minutes
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Note */}
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Note</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Note" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Phone Number */}
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input type="text" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className="mt-3" color="primary" type="submit">
+              Book Appointment
+            </Button>
+          </div>
+        </form>
+        <ToastContainer />
+      </Form>
+    </div>
   )
 }
 

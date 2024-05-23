@@ -5,10 +5,15 @@ import HeroSection from '@/components/HeroSection'
 export default function Home() {
   return (
     <>
-      <main className="fadeIn animate-fadeIn ">
+      <main className="fadeIn animate-fadeIn bg-white">
         <HeroSection />
-        <ServicesContainer />
-        <BookAppointment />
+        <div id="services">
+          <ServicesContainer />
+        </div>
+
+        <div id="booking-section">
+          <BookAppointment />
+        </div>
       </main>
     </>
   )
