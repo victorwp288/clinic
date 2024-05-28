@@ -28,7 +28,7 @@ function Navbar() {
 
   return (
     <div className="fixed top-0 z-50 flex w-full items-center justify-between bg-white px-4 py-4 text-sm transition duration-300 ease-in-out md:px-64">
-      <Image src={logo} className="w-16  lg:w-20" alt="Logo" />
+      <Image src={logo} className=" w-16 lg:w-20" alt="Logo" />
       <ul className="hidden gap-10 md:flex">
         <li>
           <ScrollLink

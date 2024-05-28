@@ -1,17 +1,36 @@
 'use client'
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Accordion from '@/components/Accordion'
 import clock from '@/images/clock.svg'
 import Image from 'next/image'
 import maniPiedi from '@/images/mani-piedi.jpg'
-import ceretta from '@/images/ceretta.jpg'
-import makeup from '@/images/makeup.jpg'
-import massaggi from '@/images/massaggi.jpg'
 import rituale from '@/images/rituale.jpg'
 import sopracciglia from '@/images/sopracciglia.jpg'
 import tick from '@/images/tick.svg'
+import cerettaPic from '@/images/ceretta.jpg'
+import makeupPic from '@/images/makeup.jpg'
+import massaggiPic from '@/images/massaggi.jpg'
 
 function ServicesContainer() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const scrollContainerRef = useRef(null)
+
+  const handleScroll = () => {
+    const scrollPosition = scrollContainerRef.current.scrollLeft
+    const containerWidth = scrollContainerRef.current.offsetWidth
+    const newIndex = Math.round(scrollPosition / containerWidth)
+    setCurrentIndex(newIndex)
+  }
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    scrollContainer.addEventListener('scroll', handleScroll)
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   const manicure = [
     {
       title: 'Manicure',
@@ -347,14 +366,17 @@ function ServicesContainer() {
 
   return (
     <div className="m-auto mt-2 w-[90vw] md:mt-12 md:w-[70vw]">
-      <div className="flex flex-col gap-4 py-4">
+      <div className="flex flex-col gap-2 py-8 pb-6 md:gap-4 md:py-4">
         <h4 className="text-xs font-extrabold text-[#dec3c5] ">ESPLORA</h4>
-        <h2 className="font-serif text-3xl font-bold tracking-tight">
+        <h2 className="font-serif text-2xl font-bold tracking-tight md:text-3xl">
           I nostri trattamenti
         </h2>
       </div>
 
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto md:overflow-x-visible lg:flex-col">
+      <div
+        ref={scrollContainerRef}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto md:flex-col md:overflow-x-visible"
+      >
         <div class="min-w-full snap-center">
           <Accordion
             className="w-full flex-shrink-0 md:w-auto"
@@ -456,9 +478,9 @@ function ServicesContainer() {
         <div class="min-w-full snap-center">
           <Accordion
             className="w-full flex-shrink-0 md:w-auto"
-            title="Trattamenti ciglia e sopracciglia"
+            title="Ciglia e sopracciglia"
             description="Discover personalized treatments tailored to enhance your natural radiance and rejuvenate your skin. Step into a world of indulgence and refinement, where every visit leaves you feeling confident, refreshed, and revitalized."
-            image={maniPiedi}
+            image={sopracciglia}
             imagePosition="right"
           >
             <div className="grid gap-8 px-6 py-8 md:grid-cols-3 md:px-12 md:py-12">
@@ -490,7 +512,7 @@ function ServicesContainer() {
             className="w-full flex-shrink-0 md:w-auto"
             title="Massaggi viso e corpo"
             description="Discover personalized treatments tailored to enhance your natural radiance and rejuvenate your skin. Step into a world of indulgence and refinement, where every visit leaves you feeling confident, refreshed, and revitalized."
-            image={maniPiedi}
+            image={massaggiPic}
             imagePosition="left"
           >
             <div className="grid gap-8 px-6 py-8 md:grid-cols-2 md:px-12 md:py-12">
@@ -524,7 +546,7 @@ function ServicesContainer() {
             className="w-full flex-shrink-0 md:w-auto"
             title="Ceretta"
             description="Discover personalized treatments tailored to enhance your natural radiance and rejuvenate your skin. Step into a world of indulgence and refinement, where every visit leaves you feeling confident, refreshed, and revitalized."
-            image={maniPiedi}
+            image={cerettaPic}
             imagePosition="right"
           >
             <div className="flex flex-col">
@@ -581,7 +603,7 @@ function ServicesContainer() {
             className="w-full flex-shrink-0 md:w-auto"
             title="Rituali dal mondo"
             description="I rituali dal mondo sono un’esperienza personale e completa, ripropongono un’esperienza multisensoriale profondamente immersiva, a partire dagli aromi. Gli ingredienti e le pratiche proposte provengono direttamente dalle millenarie tradizioni di bellezza."
-            image={maniPiedi}
+            image={rituale}
             imagePosition="left"
           >
             <div className="px-6 pb-6 md:px-12">
@@ -662,9 +684,9 @@ function ServicesContainer() {
         <div class="min-w-full snap-center">
           <Accordion
             className="w-full flex-shrink-0 md:w-auto"
-            title="Servizi make-up e acconciature"
+            title="Make-up e acconciature"
             description="Discover personalized treatments tailored to enhance your natural radiance and rejuvenate your skin. Step into a world of indulgence and refinement, where every visit leaves you feeling confident, refreshed, and revitalized."
-            image={maniPiedi}
+            image={makeupPic}
             imagePosition="right"
           >
             <div className="grid grid-cols-1 gap-8 px-6 py-8 md:grid-cols-3 md:px-12 md:py-12">
@@ -770,6 +792,16 @@ function ServicesContainer() {
             </div>
           </Accordion>
         </div>
+      </div>
+      <div className=" flex justify-center p-4">
+        {[...Array(7).keys()].map((_, index) => (
+          <div
+            key={index}
+            className={`mx-1 h-1 w-1 rounded-full ${
+              currentIndex === index ? 'bg-[#d3b7ba]' : 'bg-gray-200'
+            }`}
+          ></div>
+        ))}
       </div>
     </div>
   )
