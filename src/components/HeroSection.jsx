@@ -17,9 +17,9 @@ function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 from-10% to-transparent"></div>
         <div className="relative flex flex-col gap-8 p-6 md:pl-12">
           <h3 className="  text-left text-base font-semibold leading-tight text-white md:w-[60vw] md:text-2xl">
-            Il centro benessere Gioia Beauty offre un'esperienza di bellezza
-            ecosotenibile e vegana, con prodotti e servizi di altissima qualità
-            che rispettano l'ambiente e gli animali.
+            Il centro benessere Gioia Beauty offre un&apos;esperienza di
+            bellezza ecosotenibile e vegana, con prodotti e servizi di altissima
+            qualità che rispettano l&apos;ambiente e gli animali.
           </h3>
           <div className="flex flex-col gap-6">
             <ScrollLink
