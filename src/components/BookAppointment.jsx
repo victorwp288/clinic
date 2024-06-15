@@ -127,7 +127,7 @@ const BookAppointment = () => {
     day <= new Date() || day.getDay() === 0 || day.getDay() === 6
 
   return (
-    <div className=" m-auto mt-12 w-[90vw] space-y-8  md:w-[70vw]">
+    <div className=" m-auto mt-12 w-[90vw] space-y-4  md:w-[70vw]">
       <div className="flex flex-col gap-2 py-1 md:gap-4 md:py-4">
         <h4 className="text-xs font-extrabold text-[#dec3c5] ">
           CONCEDITI UN MOMENTO DI RELAX

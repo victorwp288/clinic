@@ -1,13 +1,12 @@
 'use client'
-
+import Link from 'next/link'
 import Image from 'next/image'
 import rituale from '@/images/rituale.jpg'
 import downArrow from '@/images/down-arrow.svg'
-import { Link as ScrollLink } from 'react-scroll'
 
 function HeroSection() {
   return (
-    <div className="relative mb-6 h-screen bg-cover bg-center md:mb-24">
+    <div className=" relative  h-screen bg-cover bg-center  md:mt-10 md:h-[95vh]">
       <Image
         className="h-full w-full object-cover"
         src={rituale}
@@ -22,29 +21,22 @@ function HeroSection() {
             qualità che rispettano l&apos;ambiente e gli animali.
           </h3>
           <div className="flex flex-col gap-6">
-            <ScrollLink
-              to="booking-section"
-              spy={true}
-              smooth={true}
+            <Link
+              href="#booking-section"
               offset={-80}
-              duration={300}
               className="w-fit cursor-pointer border border-white p-4 text-base font-medium text-white "
               activeClass="active-link"
             >
               PRENOTA
-            </ScrollLink>
+            </Link>
             <div className="flex items-center gap-2">
-              <ScrollLink
-                to="services"
-                spy={true}
-                smooth={true}
-                offset={-120}
-                duration={300}
+              <Link
+                href="#services"
                 className="w-fit cursor-pointer   text-sm font-medium text-white "
                 activeClass="active-link"
               >
                 Scopri i nostri servizi
-              </ScrollLink>
+              </Link>
               <Image src={downArrow} alt="down arrow" />
             </div>
           </div>

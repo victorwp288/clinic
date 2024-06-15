@@ -33,5 +33,10 @@ const rituali = [
       },
     ],
   },
+  {
+    title: 'Rituale Cute',
+    description:
+      'Rilassante, rigenerante, detossinante. Grazie al massaggio con oli essenziali e all’applicazione di acqua di mare liofilizzata, il rituale aiuta a ristabilire le normali funzioni del cuoio capelluto, garantendo un benessere totale per pelle e corpo.',
+  },
 ]
 export default rituali

@@ -22,9 +22,9 @@ const trattamentiViso = [
     duration: '+10',
   },
   {
-    title: 'Trattamento viso eterna',
+    title: 'Trattamento viso Eterna',
     description:
-      'Il trattamento dell’eterna giovinezza, dona tono, luminosità e freschezza all’incarnato grazie alle manualità e ai principi attivi applicati. Completo di detersione, scrub, applicazione di acido mandelico e peeling enzimatico. Completa il trattamento una maschera antiage e il calco.  ',
+      'Il trattamento dell’eterna giovinezza, dona tono, luminosità e freschezza all’incarnato grazie alle manualità e ai principi attivi applicati. Completo di detersione, scrub, applicazione di acido mandelico e peeling enzimatico. Le sue tecniche di massaggio derivano dalle richieste diuna antica imperatrice giapponese, che chiese una cura che esaltasse e mantenesse la sua bellezza immutata nel tempo.',
     duration: 90,
   },
   {
@@ -32,6 +32,12 @@ const trattamentiViso = [
     description:
       'Un trattamento ideale in pausa pranzo o per chi ha poco tempo, il soli 30 minuti la tua pelle sarà dissetata e ricaricata di vitamine essenziali.  ',
     duration: 30,
+  },
+  {
+    title: 'Ossigeno dermo infusione',
+    description:
+      'Trattamento dall’ effetto rigenerante, riempitivo e liftante con acido ialuronico in combinazione con ossigeno puro. Il viso appare sin da subito più giovane, luminoso, la grana della pelle risulta più sottile ed omogenea.',
+    duration: 60,
   },
   {
     title: 'Trattamenti viso specifici',

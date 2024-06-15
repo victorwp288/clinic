@@ -283,7 +283,7 @@ function ServicesContainer() {
             image={rituale}
             imagePosition="left"
           >
-            <div className="px-6 pb-6 md:px-12">
+            <div className="px-6 pb-12 md:px-12">
               <div className="flex flex-col gap-4 py-10">
                 <div className="flex flex-col gap-1">
                   <div className="flex gap-1">

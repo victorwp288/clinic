@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import logo from '@/images/logo.svg'
-import { Link as ScrollLink } from 'react-scroll'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import BurgerMenu from '@/components/BurgerMenu' // Adjust the import path as necessary
@@ -13,8 +13,16 @@ function Navbar() {
 
   const handleLinkClick = (target) => {
     if (target.startsWith('#')) {
-      document.querySelector(target).scrollIntoView({ behavior: 'smooth' })
+      // Internal link, check if the target element exists
+      const targetElement = document.querySelector(target)
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        // If the target element doesn't exist, navigate using router
+        router.push(target)
+      }
     } else {
+      // External link, navigate using router
       router.push(target)
     }
   }
@@ -27,21 +35,17 @@ function Navbar() {
   ]
 
   return (
-    <div className="fixed top-0 z-50 flex w-full items-center justify-between bg-white px-4 py-4 text-sm transition duration-300 ease-in-out md:px-64">
+    <div className="fixed top-0 z-50 flex w-full items-center justify-between bg-white px-4 py-4 text-sm transition duration-300 ease-in-out md:px-28 lg:px-64">
       <Image src={logo} className=" w-16 lg:w-20" alt="Logo" />
       <ul className="hidden gap-10 md:flex">
         <li>
-          <ScrollLink
-            to="services"
-            spy={true}
-            smooth={true}
-            offset={-120}
-            duration={300}
+          <Link
+            href="/#services"
             className="link cursor-pointer"
             activeClass="active-link"
           >
             I NOSTRI SERVIZI
-          </ScrollLink>
+          </Link>
         </li>
         <li>
           <a
@@ -60,17 +64,13 @@ function Navbar() {
           </a>
         </li>
         <li>
-          <ScrollLink
-            to="booking-section"
-            spy={true}
-            smooth={true}
-            offset={-80}
-            duration={300}
+          <Link
+            href="/#booking-section"
             className="link cursor-pointer font-semibold"
             activeClass="active-link"
           >
             PRENOTA
-          </ScrollLink>
+          </Link>
         </li>
       </ul>
       <div className="md:hidden">

@@ -6,6 +6,7 @@ import cerettaPic from '@/images/ceretta.jpg'
 import makeupPic from '@/images/makeup.jpg'
 import massaggiPic from '@/images/massaggi.jpg'
 import clock from '@/images/clock.svg'
+import elettroporatore from '@/images/elettroporazione.jpg'
 
 export {
   maniPiedi,
@@ -16,4 +17,5 @@ export {
   makeupPic,
   massaggiPic,
   clock,
+  elettroporatore,
 }
