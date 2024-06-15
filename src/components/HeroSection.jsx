@@ -1,21 +1,46 @@
-"use client";
-import React from 'react'
+'use client'
+import Link from 'next/link'
+import Image from 'next/image'
+import rituale from '@/images/rituale.jpg'
+import downArrow from '@/images/down-arrow.svg'
 
 function HeroSection() {
   return (
-    <div
-      className="  z-0  grid h-screen grid-cols-1 items-end justify-center bg-cover bg-center md:grid-cols-2"
-      style={{ backgroundColor: '#faf0f1' }}
-    >
-      <div className=" relative p-24 md:p-24">
-        <h3 className="text-black">
-          “Experience the artistry of beauty transformation at our premier
-          clinic. Discover personalized treatments tailored to enhance your
-          natural radiance and rejuvenate your skin. <br />
-          <br />
-          Step into a world of indulgence and refinement, where every visit
-          leaves you feeling confident, refreshed, and revitalized.”
-        </h3>
+    <div className=" relative  h-screen bg-cover bg-center  md:mt-10 md:h-[95vh]">
+      <Image
+        className="h-full w-full object-cover"
+        src={rituale}
+        alt="duration of the service"
+      />
+      <div className="absolute inset-0 flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 from-10% to-transparent"></div>
+        <div className="relative flex flex-col gap-8 p-6 md:pl-12">
+          <h3 className="  text-left text-base font-semibold leading-tight text-white md:w-[60vw] md:text-2xl">
+            Il centro benessere Gioia Beauty offre un&apos;esperienza di
+            bellezza ecosotenibile e vegana, con prodotti e servizi di altissima
+            qualità che rispettano l&apos;ambiente e gli animali.
+          </h3>
+          <div className="flex flex-col gap-6">
+            <Link
+              href="#booking-section"
+              offset={-80}
+              className="w-fit cursor-pointer border border-white p-4 text-base font-medium text-white "
+              activeClass="active-link"
+            >
+              PRENOTA
+            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="#services"
+                className="w-fit cursor-pointer   text-sm font-medium text-white "
+                activeClass="active-link"
+              >
+                Scopri i nostri servizi
+              </Link>
+              <Image src={downArrow} alt="down arrow" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

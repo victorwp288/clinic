@@ -68,7 +68,7 @@ export function Dashboard() {
         setLoading(false) // Authenticated, stop showing loading state
       }
     })
-  }, [router])
+  }, [auth, router])
 
   if (loading) {
     return <div>Loading...</div> // Or a more styled loading spinner/component
